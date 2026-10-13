@@ -26,12 +26,21 @@ class Fooyin < Formula
     system "cmake", "--build", "build", "--parallel"
     system "cmake", "--install", "build"
     bin.install_symlink prefix/"fooyin.app/Contents/MacOS/fooyin"
+    # Homebrew manages the app in the Cellar; link it into /Applications.
+    # Avoid overwriting a separately installed fooyin.app.
+    app_target = Pathname("/Applications/fooyin.app")
+    if app_target.exist? || app_target.symlink?
+      opoo "#{app_target} already exists; leaving it unchanged"
+    else
+      app_target.make_symlink(prefix/"fooyin.app")
+    end
   end
 
   def caveats
     <<~EOS
       Development build from fooyin master; macOS support is experimental.
-      Launch with: open #{opt_prefix}/fooyin.app
+      Launch from /Applications/fooyin.app (or open #{opt_prefix}/fooyin.app).
+      If /Applications/fooyin.app already existed, it was left unchanged.
       To fetch newer commits: brew reinstall --HEAD fooyin
     EOS
   end
