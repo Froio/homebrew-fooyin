@@ -11,7 +11,7 @@ class Fooyin < Formula
   depends_on "icu4c@77"
   depends_on "libarchive"
   depends_on "qt"
-  depends_on "sdl3"
+  depends_on "sdl2"
   depends_on "taglib"
 
   def install
@@ -39,7 +39,7 @@ class Fooyin < Formula
       Launch with: open #{opt_prefix}/fooyin.app
       Optional Applications shortcut:
         ln -s #{opt_prefix}/fooyin.app /Applications/fooyin.app
-      To fetch newer commits: brew reinstall --HEAD fooyin
+      To fetch newer commits: brew uninstall fooyin && brew install --HEAD froio/fooyin/fooyin
     EOS
   end
 end
