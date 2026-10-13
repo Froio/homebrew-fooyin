@@ -11,7 +11,7 @@ class Fooyin < Formula
   depends_on "icu4c@77"
   depends_on "libarchive"
   depends_on "qt"
-  depends_on "sdl2"
+  depends_on "sdl3"
   depends_on "taglib"
 
   def install
