@@ -28,7 +28,7 @@ class Fooyin < Formula
     # Bundle ICU data alongside the ICU libraries copied by upstream.
     frameworks = prefix/"fooyin.app/Contents/Frameworks"
     frameworks.mkpath
-    frameworks.install Formula["icu4c@77"].opt_lib/"libicudata.77.dylib"
+    cp Formula["icu4c@77"].opt_lib/"libicudata.77.dylib", frameworks/"libicudata.77.dylib"
     bin.install_symlink prefix/"fooyin.app/Contents/MacOS/fooyin"
     # Homebrew manages the app in the Cellar; link it into /Applications.
     # Avoid overwriting a separately installed fooyin.app.
