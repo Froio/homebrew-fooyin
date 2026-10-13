@@ -12,9 +12,19 @@ class Fooyin < Formula
   depends_on "libarchive"
   depends_on "qt"
   depends_on "sdl2"
+  depends_on "sdl3"
   depends_on "taglib"
 
   def install
+    # On macOS, let the app bundle's fooyin.icns supply the Dock icon.
+    # Keep the Qt runtime icon behavior unchanged on other platforms.
+    inreplace "src/gui/mainwindow.cpp",
+              "    setWindowIcon(Gui::applicationIcon());",
+              "    #ifndef Q_OS_MACOS\\n    setWindowIcon(Gui::applicationIcon());\\n    #endif".gsub("\\n", "\n")
+    inreplace "src/gui/guiapplication.cpp",
+              "    qApp->setWindowIcon(icon);\\n    m_mainWindow->setWindowIcon(icon);".gsub("\\n", "\n"),
+              "    #ifndef Q_OS_MACOS\\n    qApp->setWindowIcon(icon);\\n    m_mainWindow->setWindowIcon(icon);\\n    #endif".gsub("\\n", "\n")
+
     system "cmake", "-S", ".", "-B", "build", "-G", "Ninja",
            "-DCMAKE_BUILD_TYPE=Release",
            "-DCMAKE_INSTALL_PREFIX=#{prefix}",
@@ -29,8 +39,12 @@ class Fooyin < Formula
     frameworks = prefix/"fooyin.app/Contents/Frameworks"
     frameworks.mkpath
     cp Formula["icu4c@77"].opt_lib/"libicudata.77.dylib", frameworks/"libicudata.77.dylib"
-    bin.install_symlink prefix/"fooyin.app/Contents/MacOS/fooyin"
+    # sdl2-compat loads SDL3 via dlopen("@loader_path/libSDL3.dylib").
+    cp Formula["sdl3"].opt_lib/"libSDL3.0.dylib", frameworks/"libSDL3.dylib"
 
+    # Sign only after the bundle has been fully assembled.
+    system "/usr/bin/codesign", "--force", "--deep", "--sign", "-", prefix/"fooyin.app"
+    bin.install_symlink prefix/"fooyin.app/Contents/MacOS/fooyin"
   end
 
   def caveats
