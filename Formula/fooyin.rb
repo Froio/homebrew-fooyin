@@ -30,21 +30,15 @@ class Fooyin < Formula
     frameworks.mkpath
     cp Formula["icu4c@77"].opt_lib/"libicudata.77.dylib", frameworks/"libicudata.77.dylib"
     bin.install_symlink prefix/"fooyin.app/Contents/MacOS/fooyin"
-    # Homebrew manages the app in the Cellar; link it into /Applications.
-    # Avoid overwriting a separately installed fooyin.app.
-    app_target = Pathname("/Applications/fooyin.app")
-    if app_target.exist? || app_target.symlink?
-      opoo "#{app_target} already exists; leaving it unchanged"
-    else
-      app_target.make_symlink(prefix/"fooyin.app")
-    end
+
   end
 
   def caveats
     <<~EOS
       Development build from fooyin master; macOS support is experimental.
-      Launch from /Applications/fooyin.app (or open #{opt_prefix}/fooyin.app).
-      If /Applications/fooyin.app already existed, it was left unchanged.
+      Launch with: open #{opt_prefix}/fooyin.app
+      Optional Applications shortcut:
+        ln -s #{opt_prefix}/fooyin.app /Applications/fooyin.app
       To fetch newer commits: brew reinstall --HEAD fooyin
     EOS
   end
